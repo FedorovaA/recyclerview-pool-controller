@@ -1,0 +1,45 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+
+android {
+    namespace 'com.recyclerpoolsample'
+    compileSdk rootProject.ext.compileSdkVer
+
+    defaultConfig {
+        applicationId "com.recyclerpoolsample"
+        minSdk rootProject.ext.minSdkVer
+        targetSdk rootProject.ext.targetSdkVer
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    buildFeatures {
+        viewBinding true
+    }
+}
+
+dependencies {
+    implementation "androidx.core:core-ktx:$rootProject.ext.kotlin"
+    implementation "androidx.appcompat:appcompat:$rootProject.ext.appcompat"
+    implementation "com.google.android.material:material:$rootProject.ext.material"
+    implementation "androidx.recyclerview:recyclerview:$rootProject.ext.recyclerView"
+    implementation "androidx.asynclayoutinflater:asynclayoutinflater:$rootProject.ext.asyncLayoutInflater"
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation project(':recyclerview-pool-controller')
+}
