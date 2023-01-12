@@ -6,7 +6,7 @@ This module provides storage of previously created viewholders in the stack for 
 Import this extension as a module into your project and connect it to the main project.
 
 ```groovy
-implementation project(':recyclerview-pool-controller')
+implementation "com.github.FedorovaA:recyclerview-pool-controller:1.0"
 ```
 
 ## How to use
@@ -49,7 +49,7 @@ class Activity : AppCompatActivity() {
 
 In the place where you set the adapter, add the global pool in RecyclerView
 ```kotlin
-	recyclerView.setRecycledViewPool(GlobalRVPool())
+	recyclerView.setRecycledViewPool(GlobalRecycledViewPool())
 ```
 
 In the onCreateViewHolder method of the adapter.
