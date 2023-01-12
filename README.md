@@ -23,15 +23,16 @@ class Activity : AppCompatActivity() {
 	// Create a delegate variable that will pass to the module 
 	// which viewholders to use for storage in the stack
 	private val createVhDelegate = object : GlobalRecycledViewPoolController.CreateViewHolderDelegate {
-		// simple creation
-		override fun createViewHolderInBackground(viewType: Int): RecyclerView.ViewHolder? {
-            ...
-        }
-        // with AsyncLAyoutInflater
-        override fun createViewHolderWithAsyncInflater(viewType: Int, view: View): RecyclerView.ViewHolder? {
-        	...
-        }
-	}
+        	// simple creation
+        	override fun createViewHolderWithAsyncInflater(viewType: Int, view: View): RecyclerView.ViewHolder? {
+           		return viewHolderDelegateWrapper.setupAsyncViewHolder(viewType, view)
+        	}
+
+        	// with AsyncLAyoutInflater
+        	override fun createViewHolderInBackground(viewType: Int): RecyclerView.ViewHolder? {
+            		return viewHolderDelegateWrapper.setupBgViewHolder(viewType, this@MainActivity)
+        	}
+    	}
 
 	// Initialize the controller
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,9 +40,9 @@ class Activity : AppCompatActivity() {
 		...
 
 		// simple creation
-        GlobalRecycledViewPoolController.initialize(List<GlobalRecycledViewPoolController.ViewHolderCacheParams>, BackgroundViewHolderInitializer(), createVhDelegate)
+        	GlobalRecycledViewPoolController.initialize(List<GlobalRecycledViewPoolController.ViewHolderCacheParams>, BackgroundViewHolderInitializer(), createVhDelegate)
 		// or with AsyncLAyoutInflater
-        GlobalRecycledViewPoolController.initialize(List<GlobalRecycledViewPoolController.ViewHolderCacheParams>, AsyncViewHolderInitializer(this), createVhDelegate)
+        	GlobalRecycledViewPoolController.initialize(List<GlobalRecycledViewPoolController.ViewHolderCacheParams>, AsyncViewHolderInitializer(this), createVhDelegate)
 	}
 
 }
