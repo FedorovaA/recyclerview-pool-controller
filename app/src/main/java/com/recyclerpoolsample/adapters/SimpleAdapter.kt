@@ -1,5 +1,6 @@
 package com.recyclerpoolsample.adapters
 
+import android.graphics.Color
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,12 @@ class SimpleAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
         const val TYPE_ITEM = 1
+    }
+
+    init {
+        GlobalRecycledViewPoolController.setupViewHolderIfNeed(TYPE_ITEM) { holder ->
+            (holder as? SimpleViewHolder)?.binding?.root?.background?.setTint(Color.BLUE)
+        }
     }
 
     var items: List<SimpleModel> = emptyList()

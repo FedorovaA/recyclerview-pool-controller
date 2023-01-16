@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var activityBinding: ActivityMainBinding
 
-    private val adapter: SimpleAdapter = SimpleAdapter()
+    private lateinit var adapter: SimpleAdapter
 
     //made singleton
     private val viewHolderDelegateWrapper = ViewHolderDelegateWrapper()
@@ -44,15 +44,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(activityBinding.root)
 //        GlobalRecycledViewPoolController.initialize(viewHolderDelegateWrapper.getListOfVHCacheParams(), AsyncViewHolderInitializer(this), createVhDelegate)
-        GlobalRecycledViewPoolController.initialize(viewHolderDelegateWrapper.getListOfVHCacheParams(), BackgroundViewHolderInitializer(), createVhDelegate)
-
-        activityBinding.recyclerView.setRecycledViewPool(globalPool)
-        activityBinding.recyclerView.layoutManager = LinearLayoutManager(this)
-        activityBinding.recyclerView.adapter = adapter
-        //delay need for initialization
-        Handler(Looper.getMainLooper()).postDelayed({
+        GlobalRecycledViewPoolController.initialize(viewHolderDelegateWrapper.getListOfVHCacheParams(), BackgroundViewHolderInitializer(), createVhDelegate) {
+            adapter = SimpleAdapter()
+            activityBinding.recyclerView.setRecycledViewPool(globalPool)
+            activityBinding.recyclerView.layoutManager = LinearLayoutManager(this)
+            activityBinding.recyclerView.adapter = adapter
             setupAdapter()
-        }, 2000L)
+        }
     }
 
     private fun setupAdapter() {
