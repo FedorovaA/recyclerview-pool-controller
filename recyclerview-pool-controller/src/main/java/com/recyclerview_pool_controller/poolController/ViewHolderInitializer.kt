@@ -9,6 +9,6 @@ abstract class ViewHolderInitializer {
     abstract fun initialize(params: List<GlobalRecycledViewPoolController.ViewHolderCacheParams>,
                             createVhDelegate: GlobalRecycledViewPoolController.CreateViewHolderDelegate,
                             processCallback: (Stack<RecyclerView.ViewHolder>, Int, Int) -> Unit,
-                            finishCallback: () -> Unit)
+                            completionCallback: () -> Unit)
 
 }

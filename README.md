@@ -31,14 +31,16 @@ class Activity : AppCompatActivity() {
             		return viewHolderDelegateWrapper.setupBgViewHolder(viewType, this@MainActivity)
         	}
     	}
+    
+    private val completionCallback: () -> Unit = {}
 
 	// Initialize the controller
 	override fun onCreate(savedInstanceState: Bundle?) {
 
 		// simple creation
-        	GlobalRecycledViewPoolController.initialize(List<GlobalRecycledViewPoolController.ViewHolderCacheParams>, BackgroundViewHolderInitializer(), createVhDelegate)
+        	GlobalRecycledViewPoolController.initialize(List<GlobalRecycledViewPoolController.ViewHolderCacheParams>, BackgroundViewHolderInitializer(), createVhDelegate, completionCallback)
 		// or with AsyncLAyoutInflater
-        	GlobalRecycledViewPoolController.initialize(List<GlobalRecycledViewPoolController.ViewHolderCacheParams>, AsyncViewHolderInitializer(this), createVhDelegate)
+        	GlobalRecycledViewPoolController.initialize(List<GlobalRecycledViewPoolController.ViewHolderCacheParams>, AsyncViewHolderInitializer(this), createVhDelegate, completionCallback)
 	}
 
 }

@@ -14,7 +14,7 @@ class BackgroundViewHolderInitializer : ViewHolderInitializer() {
         params: List<GlobalRecycledViewPoolController.ViewHolderCacheParams>,
         createVhDelegate: GlobalRecycledViewPoolController.CreateViewHolderDelegate,
         processCallback: (Stack<RecyclerView.ViewHolder>, Int, Int) -> Unit,
-        finishCallback: () -> Unit
+        completionCallback: () -> Unit
     ) {
         executor.execute {
             params.forEach { vhCacheParams ->
@@ -28,7 +28,7 @@ class BackgroundViewHolderInitializer : ViewHolderInitializer() {
                 }
                 processCallback(stack, maxCacheSize, viewType)
             }
-            finishCallback()
+            completionCallback()
         }
     }
 }

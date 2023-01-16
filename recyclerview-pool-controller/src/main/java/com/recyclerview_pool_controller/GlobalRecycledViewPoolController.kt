@@ -20,16 +20,16 @@ object GlobalRecycledViewPoolController {
     fun initialize(params: List<ViewHolderCacheParams>,
                    initializer: ViewHolderInitializer,
                    createVhDelegate: CreateViewHolderDelegate,
-                   finishCallback: (() -> Unit)? = null) {
+                   completionCallback: (() -> Unit)? = null) {
         if (!checkDoubleViewType(params)) {
             this.createVhDelegate = createVhDelegate
             initializer.initialize(params, createVhDelegate,
                 processCallback = { stack, maxCacheSize, viewType ->
                     mapOfStackVh[viewType] = stack
                     mapOfMaxSizeCacheVh[viewType] = maxCacheSize
-                }, finishCallback = {
+                }, completionCallback = {
                     isInitialized = true
-                    finishCallback?.invoke()
+                    completionCallback?.invoke()
                 }
             )
         } else {
@@ -65,6 +65,7 @@ object GlobalRecycledViewPoolController {
     //you can call this method when adapter is init
     //but after GlobalRecycledViewPoolController.initialize
     fun setupViewHolderIfNeed(viewType: Int, callback: (RecyclerView.ViewHolder) -> Unit) {
+        require(isInitialized)
         val stack = mapOfStackVh[viewType]
         stack?.map {
             callback.invoke(it)

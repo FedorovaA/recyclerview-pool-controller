@@ -18,7 +18,7 @@ class AsyncViewHolderInitializer(val context: Context) : ViewHolderInitializer()
         params: List<GlobalRecycledViewPoolController.ViewHolderCacheParams>,
         createVhDelegate: GlobalRecycledViewPoolController.CreateViewHolderDelegate,
         processCallback: (Stack<RecyclerView.ViewHolder>, Int, Int) -> Unit,
-        finishCallback: () -> Unit
+        completionCallback: () -> Unit
     ) {
         params.forEach { vhCacheParams ->
             val stack = Stack<RecyclerView.ViewHolder>()
@@ -38,6 +38,6 @@ class AsyncViewHolderInitializer(val context: Context) : ViewHolderInitializer()
             }
             processCallback(stack, maxCacheSize, viewType)
         }
-        finishCallback()
+        completionCallback()
     }
 }
