@@ -2,7 +2,6 @@ package com.recyclerview_pool_controller
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewbinding.ViewBinding
 import com.recyclerview_pool_controller.poolController.ViewHolderInitializer
 import java.util.*
 
@@ -10,21 +9,29 @@ object GlobalRecycledViewPoolController {
 
     const val LOG_TAG = "RvPerfExtension"
 
-    private var isInitialized = false
+    var isInitialized = false
+        private set
+
     private var mapOfStackVh = mutableMapOf<Int, Stack<RecyclerView.ViewHolder>>()
     private var mapOfMaxSizeCacheVh = mutableMapOf<Int, Int>()
     private lateinit var createVhDelegate: CreateViewHolderDelegate
 
+    @Throws(IllegalStateException::class)
     fun initialize(params: List<ViewHolderCacheParams>,
                    initializer: ViewHolderInitializer,
-                   createVhDelegate: CreateViewHolderDelegate) {
+                   createVhDelegate: CreateViewHolderDelegate,
+                   finishCallback: (() -> Unit)? = null) {
         if (!checkDoubleViewType(params)) {
-            isInitialized = true
             this.createVhDelegate = createVhDelegate
-            initializer.initialize(params, createVhDelegate) { stack, maxCacheSize, viewType ->
-                mapOfStackVh[viewType] = stack
-                mapOfMaxSizeCacheVh[viewType] = maxCacheSize
-            }
+            initializer.initialize(params, createVhDelegate,
+                processCallback = { stack, maxCacheSize, viewType ->
+                    mapOfStackVh[viewType] = stack
+                    mapOfMaxSizeCacheVh[viewType] = maxCacheSize
+                }, finishCallback = {
+                    isInitialized = true
+                    finishCallback?.invoke()
+                }
+            )
         } else {
             throw IllegalStateException("Duplicate ViewHolder type")
         }
@@ -52,6 +59,19 @@ object GlobalRecycledViewPoolController {
     fun putViewHolderToStack(viewType: Int, vh: RecyclerView.ViewHolder) {
         require(isInitialized)
         mapOfStackVh[viewType]?.push(vh)
+    }
+
+    //If you need set once to vh
+    //you can call this method when adapter is init
+    //but after GlobalRecycledViewPoolController.initialize
+    fun setupViewHolderIfNeed(viewType: Int, callback: (RecyclerView.ViewHolder) -> Unit) {
+        val stack = mapOfStackVh[viewType]
+        stack?.map {
+            callback.invoke(it)
+        }
+        if (stack != null) {
+            mapOfStackVh[viewType] = stack
+        }
     }
 
     private fun checkDoubleViewType(params: List<ViewHolderCacheParams>): Boolean {

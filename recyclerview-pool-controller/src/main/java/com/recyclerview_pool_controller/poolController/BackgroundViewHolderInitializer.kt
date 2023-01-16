@@ -10,9 +10,12 @@ class BackgroundViewHolderInitializer : ViewHolderInitializer() {
 
     private val executor = Executors.newFixedThreadPool(1)
 
-    override fun initialize(params: List<GlobalRecycledViewPoolController.ViewHolderCacheParams>,
-                            createVhDelegate: GlobalRecycledViewPoolController.CreateViewHolderDelegate,
-                            callback: (Stack<RecyclerView.ViewHolder>, Int, Int) -> Unit) {
+    override fun initialize(
+        params: List<GlobalRecycledViewPoolController.ViewHolderCacheParams>,
+        createVhDelegate: GlobalRecycledViewPoolController.CreateViewHolderDelegate,
+        processCallback: (Stack<RecyclerView.ViewHolder>, Int, Int) -> Unit,
+        finishCallback: () -> Unit
+    ) {
         executor.execute {
             params.forEach { vhCacheParams ->
                 val stack = Stack<RecyclerView.ViewHolder>()
@@ -23,8 +26,9 @@ class BackgroundViewHolderInitializer : ViewHolderInitializer() {
                     viewHolder?.let { ViewHolderUtils.setItemViewTypeVh(it, viewType) }
                     stack.push(viewHolder)
                 }
-                callback(stack, maxCacheSize, viewType)
+                processCallback(stack, maxCacheSize, viewType)
             }
+            finishCallback()
         }
     }
 }

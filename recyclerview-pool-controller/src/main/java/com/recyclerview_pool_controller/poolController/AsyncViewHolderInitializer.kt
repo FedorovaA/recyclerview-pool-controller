@@ -3,7 +3,6 @@ package com.recyclerview_pool_controller.poolController
 import android.content.Context
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewbinding.ViewBinding
 import com.recyclerview_pool_controller.GlobalRecycledViewPoolController
 import com.recyclerview_pool_controller.utils.ViewHolderUtils
 import java.util.*
@@ -15,10 +14,13 @@ class AsyncViewHolderInitializer(val context: Context) : ViewHolderInitializer()
 
     private val executor = Executors.newFixedThreadPool(1)
 
-    override fun initialize(params: List<GlobalRecycledViewPoolController.ViewHolderCacheParams>,
-                            createVhDelegate: GlobalRecycledViewPoolController.CreateViewHolderDelegate,
-                            callback: (Stack<RecyclerView.ViewHolder>, Int, Int) -> Unit) {
-        params.forEach {vhCacheParams ->
+    override fun initialize(
+        params: List<GlobalRecycledViewPoolController.ViewHolderCacheParams>,
+        createVhDelegate: GlobalRecycledViewPoolController.CreateViewHolderDelegate,
+        processCallback: (Stack<RecyclerView.ViewHolder>, Int, Int) -> Unit,
+        finishCallback: () -> Unit
+    ) {
+        params.forEach { vhCacheParams ->
             val stack = Stack<RecyclerView.ViewHolder>()
             val viewType = vhCacheParams.viewType
             val layoutId = vhCacheParams.layoutId
@@ -34,7 +36,8 @@ class AsyncViewHolderInitializer(val context: Context) : ViewHolderInitializer()
                     }
                 }
             }
-            callback(stack, maxCacheSize, viewType)
+            processCallback(stack, maxCacheSize, viewType)
         }
+        finishCallback()
     }
 }
