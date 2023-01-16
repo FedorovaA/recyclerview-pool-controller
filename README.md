@@ -18,8 +18,6 @@ In the main activity of the application take the following steps:
 ```kotlin
 class Activity : AppCompatActivity() {
 
-	...
-
 	// Create a delegate variable that will pass to the module 
 	// which viewholders to use for storage in the stack
 	private val createVhDelegate = object : GlobalRecycledViewPoolController.CreateViewHolderDelegate {
@@ -36,8 +34,6 @@ class Activity : AppCompatActivity() {
 
 	// Initialize the controller
 	override fun onCreate(savedInstanceState: Bundle?) {
-
-		...
 
 		// simple creation
         	GlobalRecycledViewPoolController.initialize(List<GlobalRecycledViewPoolController.ViewHolderCacheParams>, BackgroundViewHolderInitializer(), createVhDelegate)
@@ -56,13 +52,21 @@ In the place where you set the adapter, add the global pool in RecyclerView
 In the onCreateViewHolder method of the adapter.
 ```kotlin
 class Adapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
-	...
-
+    
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 		return GlobalRecycledViewPoolController.getViewHolderForType(viewType)
 	}
 }
+```
+
+This flag shows successfully initialize
+```kotlin
+GlobalRecycledViewPoolController.isInitialized
+```
+
+If you need to set something to the viewholder once (i.e click listener) so you can call this method. For example, during adapter initialization.
+```kotlin
+fun setupViewHolderIfNeed(viewType: Int, callback: (RecyclerView.ViewHolder) -> Unit)
 ```
 
 ## Restrictions

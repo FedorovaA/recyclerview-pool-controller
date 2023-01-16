@@ -3,8 +3,8 @@ ext {
     compileSdkVer = 32
     minSdkVer = 21
     targetSdkVer = 32
-    versionCode = 1
-    versionName = "1.0"
+    versionCode = 2
+    versionName = "1.1"
     kotlin = '1.7.21'
     appcompat = '1.5.1'
     material = '1.7.0'
