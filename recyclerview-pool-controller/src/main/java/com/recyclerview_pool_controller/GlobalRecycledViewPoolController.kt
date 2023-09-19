@@ -76,8 +76,9 @@ object GlobalRecycledViewPoolController {
     }
 
     fun putViewHolderToStack(viewType: Int, vh: RecyclerView.ViewHolder) {
-        require(isInitialized)
-        mapOfStackVh[viewType]?.push(vh)
+        if (isInitialized) {
+            mapOfStackVh[viewType]?.push(vh)
+        }
     }
 
     //If you need set once to vh
