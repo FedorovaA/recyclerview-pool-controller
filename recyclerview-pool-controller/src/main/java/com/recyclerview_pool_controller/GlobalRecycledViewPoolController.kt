@@ -14,7 +14,8 @@ object GlobalRecycledViewPoolController {
 
     private var mapOfStackVh = mutableMapOf<Int, Stack<RecyclerView.ViewHolder>>()
     private var mapOfMaxSizeCacheVh = mutableMapOf<Int, Int>()
-    private lateinit var createVhDelegate: CreateViewHolderDelegate
+    private var createVhDelegate: CreateViewHolderDelegate? = null
+    private var initializer: ViewHolderInitializer? = null
 
     @Throws(IllegalStateException::class)
     fun initialize(params: List<ViewHolderCacheParams>,
@@ -23,6 +24,7 @@ object GlobalRecycledViewPoolController {
                    completionCallback: (() -> Unit)? = null) {
         if (!checkDoubleViewType(params)) {
             this.createVhDelegate = createVhDelegate
+            this.initializer = initializer
             initializer.initialize(params, createVhDelegate,
                 processCallback = { stack, maxCacheSize, viewType ->
                     mapOfStackVh[viewType] = stack
@@ -37,23 +39,40 @@ object GlobalRecycledViewPoolController {
         }
     }
 
+    fun destroy() {
+        initializer?.cancel()
+        for ((k, v) in mapOfStackVh) {
+            v.clear()
+        }
+        mapOfStackVh.clear()
+        mapOfMaxSizeCacheVh.clear()
+        initializer = null
+        createVhDelegate = null
+    }
+
     fun getViewHolderForType(viewType: Int, isFromCreateViewHolder: Boolean = false): RecyclerView.ViewHolder? {
-        require(isInitialized)
-        return try {
-            val stack = mapOfStackVh[viewType]
-            stack?.pop()
-        } catch (ex: EmptyStackException) {
-            if (isFromCreateViewHolder) {
-                createVhDelegate.createViewHolderInBackground(viewType)
-            } else {
-                null
+        return if (isInitialized) {
+            try {
+                val stack = mapOfStackVh[viewType]
+                stack?.pop()
+            } catch (ex: EmptyStackException) {
+                if (isFromCreateViewHolder) {
+                    createVhDelegate?.createViewHolderInBackground(viewType)
+                } else {
+                    null
+                }
             }
+        } else {
+            null
         }
     }
 
     fun getRecycledViewCurrentCount(viewType: Int): Int {
-        require(isInitialized)
-        return mapOfStackVh[viewType]?.size ?: 0
+        return if (isInitialized) {
+            mapOfStackVh[viewType]?.size ?: 0
+        } else {
+            0
+        }
     }
 
     fun putViewHolderToStack(viewType: Int, vh: RecyclerView.ViewHolder) {
@@ -65,13 +84,14 @@ object GlobalRecycledViewPoolController {
     //you can call this method when adapter is init
     //but after GlobalRecycledViewPoolController.initialize
     fun setupViewHolderIfNeed(viewType: Int, callback: (RecyclerView.ViewHolder) -> Unit) {
-        require(isInitialized)
-        val stack = mapOfStackVh[viewType]
-        stack?.map {
-            callback.invoke(it)
-        }
-        if (stack != null) {
-            mapOfStackVh[viewType] = stack
+        if (isInitialized) {
+            val stack = mapOfStackVh[viewType]
+            stack?.map {
+                callback.invoke(it)
+            }
+            if (stack != null) {
+                mapOfStackVh[viewType] = stack
+            }
         }
     }
 

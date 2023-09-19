@@ -1,10 +1,10 @@
 package com.recyclerpoolsample.adapters
 
 import android.graphics.Color
-import android.util.Log
-import android.view.View
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.recyclerpoolsample.databinding.SimpleItemRvBinding
 import com.recyclerpoolsample.models.SimpleModel
 import com.recyclerpoolsample.viewholders.SimpleViewHolder
 import com.recyclerview_pool_controller.GlobalRecycledViewPoolController
@@ -29,7 +29,7 @@ class SimpleAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return GlobalRecycledViewPoolController.getViewHolderForType(viewType, true)
-            ?: object : RecyclerView.ViewHolder(View(parent.context)) {}
+            ?: SimpleViewHolder(SimpleItemRvBinding.inflate(LayoutInflater.from(parent.context), parent, false))
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
